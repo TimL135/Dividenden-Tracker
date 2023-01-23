@@ -21,18 +21,14 @@ export default defineConfig({
         theme_color: "#7E1F86",
         name: "Dividenden-Tracker",
         short_name: "Dracker",
-        start_url: "/",
+        start_url: "/Dividenden-Tracker/",
         display: "standalone",
         icons: [
           {
-            src: "pwa-192x192.png",
-            sizes: "192x192",
-            type: "image/png",
-          },
-          {
-            src: "pwa-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
+            src: "vite.svg",
+            sizes: "32x32",
+            type: "image/svg",
+            purpose: "any",
           },
         ],
       },
