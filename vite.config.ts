@@ -28,6 +28,7 @@ export default defineConfig({
             src: "vite.svg",
             sizes: "192x192",
             type: "image/svg",
+            purpose: "any maskable",
           },
         ],
       },
