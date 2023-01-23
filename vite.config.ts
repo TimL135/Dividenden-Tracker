@@ -23,9 +23,21 @@ export default defineConfig({
         short_name: "Dracker",
         start_url: "/",
         display: "standalone",
+        icons: [
+          {
+            src: "![vite](public/vite.svg)",
+            sizes: "144x144",
+            type: "image/svg",
+            purpose: "any",
+          },
+        ],
       },
     }),
   ],
+  test: {
+    globals: true,
+    environment: "jsdom",
+  },
   server: {
     host: true,
   },
