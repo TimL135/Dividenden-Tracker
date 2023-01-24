@@ -17,8 +17,8 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html,svg,png,woff2}"],
       },
       manifest: {
-        background_color: "#000000",
-        theme_color: "#7E1F86",
+        background_color: "#ffffff",
+        theme_color: "#ffffff",
         name: "Dividenden-Tracker",
         short_name: "Dracker",
         start_url: "/Dividenden-Tracker/",
