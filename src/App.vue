@@ -43,6 +43,7 @@
       </template>
       <template #Gesamt>Gesamt({{ all }}€)</template>
       <template #finances>Finanzen</template>
+      <template #regular>Monatlich</template>
       <template #income>
         <div class="d-flex">
           <div class="col-4 col-sm-5 me-2">
@@ -114,6 +115,95 @@
       <template #differenz
         >Differenz: {{ (incomes - outcomes).toFixed(2) }}€</template
       >
+      <template #erratic>Unregelmäßig</template>
+      <template #erraticIncome>
+        <div class="row">
+          <div class="col-6">
+            <NumberInput
+              placeholder="Einahme"
+              v-model="erraticIncome"
+            ></NumberInput>
+          </div>
+          <div class="col-6">
+            <TextInput placeholder="Quelle" v-model="erraticSource"></TextInput>
+          </div>
+          <div class="col-6">
+            <DateInput placeholder="Tag" v-model="erraticDate"></DateInput>
+          </div>
+          <div class="col-6 mt-3">
+            <Button @click="newErraticIncome">erstellen</Button>
+          </div>
+        </div>
+        <div
+          v-for="(erraticIncome, index) of finances.erraticIncome"
+          class="row g-1"
+        >
+          <div class="col-3">
+            <NumberInput
+              placeholder="Einahme"
+              v-model="erraticIncome.amount"
+            ></NumberInput>
+          </div>
+          <div class="col-4">
+            <TextInput
+              placeholder="Quelle"
+              v-model="erraticIncome.reason"
+            ></TextInput>
+          </div>
+          <div class="col-5">
+            <DateInput
+              placeholder="Tag"
+              v-model="erraticIncome.date"
+            ></DateInput>
+          </div>
+        </div>
+      </template>
+      <template #erraticOutcome>
+        <div class="row">
+          <div class="col-6">
+            <NumberInput
+              placeholder="Ausgabe"
+              v-model="erraticOutcome"
+            ></NumberInput>
+          </div>
+          <div class="col-6">
+            <TextInput placeholder="Grund" v-model="erraticReason"></TextInput>
+          </div>
+          <div class="col-6">
+            <DateInput placeholder="Tag" v-model="erraticOutDate"></DateInput>
+          </div>
+          <div class="col-6 mt-3">
+            <Button @click="newErraticOutcome">erstellen</Button>
+          </div>
+        </div>
+        <div
+          v-for="(erraticOutcome, index) of finances.erraticOutcome"
+          class="row g-1"
+        >
+          <div class="col-3">
+            <NumberInput
+              placeholder="Ausgabe"
+              v-model="erraticOutcome.amount"
+            ></NumberInput>
+          </div>
+          <div class="col-4">
+            <TextInput
+              placeholder="Grund"
+              v-model="erraticOutcome.reason"
+            ></TextInput>
+          </div>
+          <div class="col-5">
+            <DateInput
+              placeholder="Tag"
+              v-model="erraticOutcome.date"
+            ></DateInput>
+          </div></div
+      ></template>
+      <template #erraticMonate>
+        <div v-for="month of erraticMonths">
+          {{ month.month }}: {{ month.sum }}€
+        </div>
+      </template>
     </Accordion>
   </div>
 </template>
@@ -150,9 +240,15 @@ const items = computed(() => {
     noAccordion: true,
   });
   array.push({ title: "", hash: "finances", noAccordion: true });
+  array.push({ title: "", hash: "regular", noAccordion: true });
   array.push({ title: `Einnahmen(${incomes.value}€)`, hash: "income" });
   array.push({ title: `Ausgaben(${outcomes.value}€)`, hash: "outcome" });
-  array.push({ title: "differenz", hash: "differenz", noAccordion: true });
+  array.push({ title: "", hash: "differenz", noAccordion: true });
+  array.push({ title: "", hash: "erratic", noAccordion: true });
+  array.push({ title: `Einnahmen`, hash: "erraticIncome" });
+  array.push({ title: `Ausgaben`, hash: "erraticOutcome" });
+  array.push({ title: `Monate`, hash: "erraticMonate" });
+
   return array;
 });
 
@@ -208,14 +304,34 @@ watch(
 interface Finances {
   income: IoCome[];
   outcome: IoCome[];
+  erraticIncome: erraticIoCome[];
+  erraticOutcome: erraticIoCome[];
 }
 interface IoCome {
   amount: number;
   reason: string;
 }
+interface erraticIoCome {
+  amount: number;
+  reason: string;
+  date: string;
+}
 const finances = ref<Finances>(
   JSON.parse(localStorage.getItem("finances") || '{"income":[],"outcome":[]}')
 );
+finances.value.erraticIncome =
+  finances.value.erraticIncome?.filter(
+    (e) =>
+      new Date(e.date).toISOString() >
+      new Date(new Date().setMonth(new Date().getMonth() - 3)).toISOString()
+  ) || [];
+finances.value.erraticOutcome =
+  finances.value.erraticOutcome?.filter(
+    (e) =>
+      new Date(e.date).toISOString() >
+      new Date(new Date().setMonth(new Date().getMonth() - 3)).toISOString()
+  ) || [];
+
 watch(
   () => finances.value,
   (newValue, oldValue) => {
@@ -245,5 +361,55 @@ function newOutcome() {
   outcome.value = "";
   reason.value = "";
 }
+const erraticIncome = ref("");
+const erraticSource = ref("");
+const erraticDate = ref("");
+function newErraticIncome() {
+  if (!erraticIncome.value || !erraticSource.value || !erraticDate.value)
+    return;
+  finances.value.erraticIncome.push({
+    amount: erraticIncome.value,
+    reason: erraticSource.value,
+    date: erraticDate.value,
+  });
+  erraticIncome.value = "";
+  erraticSource.value = "";
+  erraticDate.value = "";
+}
+const erraticOutcome = ref("");
+const erraticReason = ref("");
+const erraticOutDate = ref("");
+function newErraticOutcome() {
+  if (!erraticOutcome.value || !erraticReason.value || !erraticOutDate.value)
+    return;
+  finances.value.erraticOutcome.push({
+    amount: erraticOutcome.value,
+    reason: erraticReason.value,
+    date: erraticOutDate.value,
+  });
+  erraticOutcome.value = "";
+  erraticReason.value = "";
+  erraticOutDate.value = "";
+}
+const erraticMonths = computed(() => {
+  const object = {} as { [key: string]: Month };
+  finances.value.erraticIncome.forEach((income: erraticIoCome) =>
+    object[income.date.slice(0, -3)]
+      ? (object[income.date.slice(0, -3)].sum += income.amount)
+      : (object[income.date.slice(0, -3)] = {
+          month: income.date.slice(0, -3),
+          sum: income.amount,
+        })
+  );
+  finances.value.erraticOutcome.forEach((outcome: erraticIoCome) =>
+    object[outcome.date.slice(0, -3)]
+      ? (object[outcome.date.slice(0, -3)].sum -= outcome.amount)
+      : (object[outcome.date.slice(0, -3)] = {
+          month: outcome.date.slice(0, -3),
+          sum: -outcome.amount,
+        })
+  );
+  return object;
+});
 </script>
 <style scoped></style>
