@@ -111,7 +111,9 @@
           </div>
         </div>
       </template>
-      <template #differenz>Differenz: {{ incomes - outcomes }}€</template>
+      <template #differenz
+        >Differenz: {{ (incomes - outcomes).toFixed(2) }}€</template
+      >
     </Accordion>
   </div>
 </template>
@@ -224,10 +226,10 @@ watch(
 const income = ref("");
 const source = ref("");
 const incomes = computed(() =>
-  finances.value.income.reduce((a, b) => a + b.amount, 0)
+  finances.value.income.reduce((a, b) => a + b.amount, 0).toFixed(2)
 );
 const outcomes = computed(() =>
-  finances.value.outcome.reduce((a, b) => a + b.amount, 0)
+  finances.value.outcome.reduce((a, b) => a + b.amount, 0).toFixed(2)
 );
 function newIncome() {
   if (!income.value || !source.value) return;
