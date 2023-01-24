@@ -10,29 +10,29 @@
           </TextInput>
         </div>
       </template>
-      <template v-for="share of shares" #[share.name]>
+      <template v-for="share of shares" #[stringWithoutSpace(share.name)]>
         <div class="d-flex">
-          <div class="col-5 me-2">
+          <div class="col-5 col-sm-4 me-2">
             <NumberInput
               placeholder="dividende"
               v-model="dividend"
             ></NumberInput>
           </div>
-          <div class="col-5 me-2">
+          <div class="col-5 col-sm-4 me-2">
             <DateInput placeholder="Datum" v-model="date"></DateInput>
           </div>
-          <div class="col-2 mt-3">
+          <div class="col-2 col mt-3">
             <Button @click="newDividend(share)">erstellen</Button>
           </div>
         </div>
         <div v-for="dividend of share.dividends" class="d-flex">
-          <div class="col-5 me-2">
+          <div class="col-5 col-sm-4 me-2">
             <NumberInput
               placeholder="dividende"
               v-model="dividend.dividend"
             ></NumberInput>
           </div>
-          <div class="col-5">
+          <div class="col-5 col-sm-4">
             <DateInput placeholder="Datum" v-model="dividend.date"></DateInput>
           </div>
         </div>
@@ -55,7 +55,9 @@ import {
 import { computed, ref, watch } from "vue";
 const items = computed(() => {
   const array: any = [{ title: "", hash: "head", noAccordion: true }];
-  shares.value.forEach((e: any) => array.push({ title: e.name, hash: e.name }));
+  shares.value.forEach((e: any) =>
+    array.push({ title: e.name, hash: stringWithoutSpace(e.name) })
+  );
   array.push({ title: "Monate", hash: "Monate" });
   array.push({
     title: "Gesamt",
@@ -98,6 +100,9 @@ function newDividend(share: any) {
   share.dividends.push({ date: date.value, dividend: dividend.value });
   date.value = "";
   dividend.value = "";
+}
+function stringWithoutSpace(string: string) {
+  return string.replaceAll(" ", "");
 }
 watch(
   () => shares.value,
