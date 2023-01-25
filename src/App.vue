@@ -11,7 +11,10 @@
         </div>
       </template>
       <template #dividends>Dividenden</template>
-      <template v-for="share of shares" #[stringWithoutSpace(share.name)]>
+      <template
+        v-for="share of shares"
+        #[stringWithoutSpecialCharacters(share.name)]
+      >
         <div class="d-flex">
           <div class="col-4 col-sm-5 me-2">
             <NumberInput
@@ -234,7 +237,7 @@ const items = computed(() => {
       title: `${e.name}(${e.dividends
         .reduce((a, b) => a + b.dividend, 0)
         .toFixed(2)}€)`,
-      hash: stringWithoutSpace(e.name),
+      hash: stringWithoutSpecialCharacters(e.name),
     })
   );
   array.push({ title: "Monate", hash: "Monate" });
@@ -298,8 +301,8 @@ function newDividend(share: Share) {
   date.value = "";
   dividend.value = "";
 }
-function stringWithoutSpace(string: string) {
-  return string.replaceAll(" ", "");
+function stringWithoutSpecialCharacters(string: string) {
+  return string.replace(/[^a-zA-Z0-9-_]/g, "");
 }
 watch(
   () => shares.value,
