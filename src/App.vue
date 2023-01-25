@@ -20,6 +20,8 @@
             <NumberInput
               placeholder="dividende"
               v-model="dividend"
+              step="0.01"
+              :controlInput="false"
             ></NumberInput>
           </div>
           <div class="col-4 col-sm-5 me-2">
@@ -34,6 +36,8 @@
             <NumberInput
               placeholder="dividende"
               v-model="dividend.dividend"
+              step="0.01"
+              :controlInput="false"
             ></NumberInput>
           </div>
           <div class="col-4 col-sm-5">
@@ -52,7 +56,12 @@
       <template #income>
         <div class="d-flex">
           <div class="col-4 col-sm-5 me-2">
-            <NumberInput placeholder="Einahme" v-model="income"></NumberInput>
+            <NumberInput
+              placeholder="Einahme"
+              v-model="income"
+              step="0.01"
+              :controlInput="false"
+            ></NumberInput>
           </div>
           <div class="col-4 col-sm-5 me-2">
             <TextInput placeholder="Quelle" v-model="source"></TextInput>
@@ -64,6 +73,8 @@
             <NumberInput
               placeholder="Einahme"
               v-model="income.amount"
+              step="0.01"
+              :controlInput="false"
             ></NumberInput>
           </div>
           <div class="col-4 col-sm-5 me-2">
@@ -86,7 +97,12 @@
       <template #outcome>
         <div class="d-flex">
           <div class="col-4 col-sm-5 me-2">
-            <NumberInput placeholder="Ausgabe" v-model="outcome"></NumberInput>
+            <NumberInput
+              placeholder="Ausgabe"
+              v-model="outcome"
+              step="0.01"
+              :controlInput="false"
+            ></NumberInput>
           </div>
           <div class="col-4 col-sm-5 me-2">
             <TextInput placeholder="Grund" v-model="reason"></TextInput>
@@ -98,6 +114,8 @@
             <NumberInput
               placeholder="Ausgabe"
               v-model="outcome.amount"
+              step="0.01"
+              :controlInput="false"
             ></NumberInput>
           </div>
           <div class="col-4 col-sm-5 me-2">
@@ -127,6 +145,8 @@
             <NumberInput
               placeholder="Einahme"
               v-model="erraticIncome"
+              step="0.01"
+              :controlInput="false"
             ></NumberInput>
           </div>
           <div class="col-6">
@@ -147,6 +167,8 @@
             <NumberInput
               placeholder="Einahme"
               v-model="erraticIncome.amount"
+              step="0.01"
+              :controlInput="false"
             ></NumberInput>
           </div>
           <div class="col-4">
@@ -169,6 +191,8 @@
             <NumberInput
               placeholder="Ausgabe"
               v-model="erraticOutcome"
+              step="0.01"
+              :controlInput="false"
             ></NumberInput>
           </div>
           <div class="col-6">
@@ -189,6 +213,8 @@
             <NumberInput
               placeholder="Ausgabe"
               v-model="erraticOutcome.amount"
+              step="0.01"
+              :controlInput="false"
             ></NumberInput>
           </div>
           <div class="col-4">
