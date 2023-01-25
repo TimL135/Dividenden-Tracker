@@ -39,7 +39,9 @@
         </div>
       </template>
       <template #Monate>
-        <div v-for="month of months">{{ month.month }}: {{ month.sum }}€</div>
+        <div v-for="month of months">
+          {{ month.month }}: {{ month.sum.toFixed(2) }}€
+        </div>
       </template>
       <template #Gesamt>Gesamt({{ all }}€)</template>
       <template #finances>Finanzen</template>
@@ -201,7 +203,7 @@
       ></template>
       <template #erraticMonate>
         <div v-for="month of erraticMonths">
-          {{ month.month }}: {{ month.sum }}€
+          {{ month.month }}: {{ month.sum.toFixed(2) }}€
         </div>
       </template>
     </Accordion>
@@ -229,7 +231,9 @@ const items = computed(() => {
   array.push({ title: "", hash: "dividends", noAccordion: true });
   shares.value.forEach((e: Share) =>
     array.push({
-      title: `${e.name}(${e.dividends.reduce((a, b) => a + b.dividend, 0)}€)`,
+      title: `${e.name}(${e.dividends
+        .reduce((a, b) => a + b.dividend, 0)
+        .toFixed(2)}€)`,
       hash: stringWithoutSpace(e.name),
     })
   );
@@ -278,7 +282,7 @@ const all = computed(() => {
   let sum = 0;
   if (Object.values(months.value).length > 0)
     sum = Object.values(months.value).reduce((a, b) => a + b.sum, 0);
-  return sum;
+  return sum.toFixed(2);
 });
 function newShare() {
   if (!share.value) return;
@@ -287,7 +291,10 @@ function newShare() {
 }
 function newDividend(share: Share) {
   if (!date.value || !dividend.value) return;
-  share.dividends.push({ date: date.value, dividend: dividend.value });
+  share.dividends.push({
+    date: date.value,
+    dividend: parseInt(dividend.value),
+  });
   date.value = "";
   dividend.value = "";
 }
@@ -349,7 +356,10 @@ const outcomes = computed(() =>
 );
 function newIncome() {
   if (!income.value || !source.value) return;
-  finances.value.income.push({ amount: income.value, reason: source.value });
+  finances.value.income.push({
+    amount: parseInt(income.value),
+    reason: source.value,
+  });
   income.value = "";
   source.value = "";
 }
@@ -357,7 +367,10 @@ const outcome = ref("");
 const reason = ref("");
 function newOutcome() {
   if (!outcome.value || !reason.value) return;
-  finances.value.outcome.push({ amount: outcome.value, reason: reason.value });
+  finances.value.outcome.push({
+    amount: parseInt(outcome.value),
+    reason: reason.value,
+  });
   outcome.value = "";
   reason.value = "";
 }
@@ -368,7 +381,7 @@ function newErraticIncome() {
   if (!erraticIncome.value || !erraticSource.value || !erraticDate.value)
     return;
   finances.value.erraticIncome.push({
-    amount: erraticIncome.value,
+    amount: parseInt(erraticIncome.value),
     reason: erraticSource.value,
     date: erraticDate.value,
   });
@@ -383,7 +396,7 @@ function newErraticOutcome() {
   if (!erraticOutcome.value || !erraticReason.value || !erraticOutDate.value)
     return;
   finances.value.erraticOutcome.push({
-    amount: erraticOutcome.value,
+    amount: parseInt(erraticOutcome.value),
     reason: erraticReason.value,
     date: erraticOutDate.value,
   });
