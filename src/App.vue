@@ -2,6 +2,7 @@
   <div class="container">
     <Accordion :items="items">
       <template #head>
+        <h5>Aktien</h5>
         <div>
           <TextInput placeholder="Aktie" v-model="share">
             <template #button
@@ -10,18 +11,47 @@
           </TextInput>
         </div>
       </template>
-      <template #dividends>Dividenden</template>
       <template
         v-for="share of shares"
         #[stringWithoutSpecialCharacters(share.name)]
       >
+        <Modal title="Einstellungen">
+          <Button
+            class="btn btn-danger"
+            @click="
+              shares = shares.filter(
+                (e) => JSON.stringify(e) != JSON.stringify(share)
+              )
+            "
+            >Aktie Löschen</Button
+          >
+          <div>
+            <NumberInput
+              placeholder="Dividende in %"
+              v-model="share.percent"
+              step="0.01"
+            ></NumberInput>
+          </div>
+          <div>
+            <NumberInput
+              placeholder="Sparrate pro Monat"
+              v-model="share.rate"
+              step="0.01"
+            >
+            </NumberInput>
+          </div>
+          <template #button
+            ><Button class="w-100 btn btn-primary"
+              >Einstellungen</Button
+            ></template
+          >
+        </Modal>
         <div class="d-flex">
           <div class="col-4 col-sm-5 me-2">
             <NumberInput
               placeholder="dividende"
               v-model="dividend"
               step="0.01"
-              :controlInput="false"
             ></NumberInput>
           </div>
           <div class="col-4 col-sm-5 me-2">
@@ -37,7 +67,6 @@
               placeholder="dividende"
               v-model="dividend.dividend"
               step="0.01"
-              :controlInput="false"
             ></NumberInput>
           </div>
           <div class="col-4 col-sm-5">
@@ -50,9 +79,15 @@
           {{ month.month }}: {{ month.sum.toFixed(2) }}€
         </div>
       </template>
+      <template #Info>
+        <div>Geschätzte Steigerung: {{ increase.toFixed(2) }}€ pro Monat</div>
+        <div>
+          Durchschnittliche Dividende: {{ avgPercent.toFixed(2) }}% pro Jahr
+        </div>
+      </template>
       <template #Gesamt>Gesamt({{ all }}€)</template>
-      <template #finances>Finanzen</template>
-      <template #regular>Monatlich</template>
+      <template #finances><h5>Finanzen</h5></template>
+      <template #regular><h6>Monatlich</h6></template>
       <template #income>
         <div class="d-flex">
           <div class="col-4 col-sm-5 me-2">
@@ -60,7 +95,6 @@
               placeholder="Einahme"
               v-model="income"
               step="0.01"
-              :controlInput="false"
             ></NumberInput>
           </div>
           <div class="col-4 col-sm-5 me-2">
@@ -74,7 +108,6 @@
               placeholder="Einahme"
               v-model="income.amount"
               step="0.01"
-              :controlInput="false"
             ></NumberInput>
           </div>
           <div class="col-4 col-sm-5 me-2">
@@ -101,7 +134,6 @@
               placeholder="Ausgabe"
               v-model="outcome"
               step="0.01"
-              :controlInput="false"
             ></NumberInput>
           </div>
           <div class="col-4 col-sm-5 me-2">
@@ -115,7 +147,6 @@
               placeholder="Ausgabe"
               v-model="outcome.amount"
               step="0.01"
-              :controlInput="false"
             ></NumberInput>
           </div>
           <div class="col-4 col-sm-5 me-2">
@@ -138,7 +169,7 @@
       <template #differenz
         >Differenz: {{ (incomes - outcomes).toFixed(2) }}€</template
       >
-      <template #erratic>Unregelmäßig</template>
+      <template #erratic><h6>Unregelmäßig</h6></template>
       <template #erraticIncome>
         <div class="row">
           <div class="col-6">
@@ -146,7 +177,6 @@
               placeholder="Einahme"
               v-model="erraticIncome"
               step="0.01"
-              :controlInput="false"
             ></NumberInput>
           </div>
           <div class="col-6">
@@ -168,7 +198,6 @@
               placeholder="Einahme"
               v-model="erraticIncome.amount"
               step="0.01"
-              :controlInput="false"
             ></NumberInput>
           </div>
           <div class="col-4">
@@ -192,7 +221,6 @@
               placeholder="Ausgabe"
               v-model="erraticOutcome"
               step="0.01"
-              :controlInput="false"
             ></NumberInput>
           </div>
           <div class="col-6">
@@ -214,7 +242,6 @@
               placeholder="Ausgabe"
               v-model="erraticOutcome.amount"
               step="0.01"
-              :controlInput="false"
             ></NumberInput>
           </div>
           <div class="col-4">
@@ -245,11 +272,14 @@ import {
   Button,
   NumberInput,
   DateInput,
+  Modal,
 } from "custom-mbd-components";
 import { computed, ref, watch } from "vue";
 interface Share {
   name: string;
   dividends: Dividend[];
+  rate: number;
+  percent: number;
 }
 interface Dividend {
   date: string;
@@ -257,7 +287,6 @@ interface Dividend {
 }
 const items = computed(() => {
   const array: any = [{ title: "", hash: "head", noAccordion: true }];
-  array.push({ title: "", hash: "dividends", noAccordion: true });
   shares.value.forEach((e: Share) =>
     array.push({
       title: `${e.name}(${e.dividends
@@ -267,6 +296,7 @@ const items = computed(() => {
     })
   );
   array.push({ title: "Monate", hash: "Monate" });
+  array.push({ title: "Info", hash: "Info" });
   array.push({
     title: "Gesamt",
     hash: "Gesamt",
@@ -306,6 +336,17 @@ const months = computed(() => {
     )
   );
   return object;
+});
+const increase = computed(() => {
+  let eur = 0;
+  shares.value.forEach((share) => {
+    eur += ((share.rate ?? 0) * ((share.percent ?? 0) / 100)) / 12;
+  });
+  return eur;
+});
+const avgPercent = computed(() => {
+  let eur = shares.value.reduce((a, b) => a + +b.rate, 0);
+  return ((increase.value * 12) / eur) * 100;
 });
 const all = computed(() => {
   let sum = 0;
