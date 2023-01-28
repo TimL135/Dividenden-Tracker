@@ -346,7 +346,7 @@ const increase = computed(() => {
 });
 const avgPercent = computed(() => {
   let eur = shares.value.reduce((a, b) => a + +b.rate, 0);
-  return ((increase.value * 12) / eur) * 100;
+  return ((increase.value * 12) / eur) * 100 || 0;
 });
 const all = computed(() => {
   let sum = 0;
