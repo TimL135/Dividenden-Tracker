@@ -405,7 +405,7 @@ const portfolio = computed(() => {
       }
       total += sumShare;
     }
-    arr.push(total);
+    arr.push(total.toFixed(0));
   }
   return arr;
 });
