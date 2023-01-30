@@ -298,13 +298,13 @@ import { computed, ref, watch } from "vue";
 interface Share {
   name: string;
   dividends: Dividend[];
-  rate: number;
-  percent: number;
+  rate: string;
+  percent: string;
   payoutRate: string;
 }
 interface Dividend {
   date: string;
-  dividend: number;
+  dividend: string;
 }
 const payoutRates = ref<{ [key: string]: number }>({
   monat: 12,
@@ -318,7 +318,7 @@ const items = computed(() => {
   shares.value.forEach((e: Share) =>
     array.push({
       title: `${e.name}(${e.dividends
-        .reduce((a, b) => a + b.dividend, 0)
+        .reduce((a, b) => a + +b.dividend, 0)
         .toFixed(2)}€)`,
       hash: stringWithoutSpecialCharacters(e.name),
     })
@@ -356,10 +356,10 @@ const months = computed(() => {
   shares.value.forEach((share: Share) =>
     share.dividends.forEach((dividend: Dividend) =>
       object[dividend.date.slice(0, -3)]
-        ? (object[dividend.date.slice(0, -3)].sum += dividend.dividend)
+        ? (object[dividend.date.slice(0, -3)].sum += +dividend.dividend)
         : (object[dividend.date.slice(0, -3)] = {
             month: dividend.date.slice(0, -3),
-            sum: dividend.dividend,
+            sum: +dividend.dividend,
           })
     )
   );
@@ -368,7 +368,7 @@ const months = computed(() => {
 const increase = computed(() => {
   let eur = 0;
   shares.value.forEach((share) => {
-    eur += ((share.rate ?? 0) * ((share.percent ?? 0) / 100)) / 12;
+    eur += ((+share.rate ?? 0) * ((+share.percent ?? 0) / 100)) / 12;
   });
   return eur;
 });
@@ -384,7 +384,7 @@ const all = computed(() => {
 });
 const invests = computed(() => {
   const arr = [];
-  const sum = shares.value.reduce((a, b) => a + b.rate * 12, 0);
+  const sum = shares.value.reduce((a, b) => a + +b.rate * 12, 0);
   for (let i of years.value) {
     arr.push(sum * i);
   }
@@ -422,8 +422,8 @@ function newShare() {
   shares.value.push({
     name: share.value,
     dividends: [],
-    rate: 0,
-    percent: 0,
+    rate: "",
+    percent: "",
     payoutRate: "",
   });
   share.value = "";
@@ -432,7 +432,7 @@ function newDividend(share: Share) {
   if (!date.value || !dividend.value) return;
   share.dividends.push({
     date: date.value,
-    dividend: parseInt(dividend.value),
+    dividend: dividend.value,
   });
   date.value = "";
   dividend.value = "";
