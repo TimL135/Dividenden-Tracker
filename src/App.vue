@@ -39,14 +39,21 @@
               step="0.01"
             >
             </NumberInput>
+            <SelectInput
+              placeholder="ausschüttung"
+              v-model="share.payoutRate"
+              :options="['monat', 'quartal', 'halbesJahr', 'jahr']"
+              showAll
+            >
+            </SelectInput>
           </div>
-          <template #button
-            ><Button class="w-100 btn btn-primary"
-              >Einstellungen</Button
-            ></template
+          <template #button>
+            <div class="w-100 px-2">
+              <Button class="btn btn-primary w-100">Einstellungen</Button>
+            </div></template
           >
         </Modal>
-        <div class="d-flex">
+        <div class="d-flex px-2">
           <div class="col-4 col-sm-5 me-2">
             <NumberInput
               placeholder="dividende"
@@ -83,6 +90,18 @@
         <div>Geschätzte Steigerung: {{ increase.toFixed(2) }}€ pro Monat</div>
         <div>
           Durchschnittliche Dividende: {{ avgPercent.toFixed(2) }}% pro Jahr
+        </div>
+        <div class="row">
+          <div class="col-3">Jahre</div>
+          <div class="col-3">Investiert</div>
+          <div class="col-3">Portfolio</div>
+          <div class="col-3">Dividende</div>
+        </div>
+        <div v-for="(year, index) of years" class="row">
+          <div class="col-3">{{ year }}:</div>
+          <div class="col-3">{{ invests[index] }}€</div>
+          <div class="col-3">{{ portfolio[index] }}€</div>
+          <div class="col-3">{{ dividende[index] }}€</div>
         </div>
       </template>
       <template #Gesamt>Gesamt({{ all }}€)</template>
@@ -273,6 +292,7 @@ import {
   NumberInput,
   DateInput,
   Modal,
+  SelectInput,
 } from "custom-mbd-components";
 import { computed, ref, watch } from "vue";
 interface Share {
@@ -280,11 +300,19 @@ interface Share {
   dividends: Dividend[];
   rate: number;
   percent: number;
+  payoutRate: string;
 }
 interface Dividend {
   date: string;
   dividend: number;
 }
+const payoutRates = ref<{ [key: string]: number }>({
+  monat: 12,
+  quartal: 4,
+  halbesJahr: 2,
+  jahr: 1,
+});
+const years = ref([1, 2, 3, 5, 10, 15, 20, 25]);
 const items = computed(() => {
   const array: any = [{ title: "", hash: "head", noAccordion: true }];
   shares.value.forEach((e: Share) =>
@@ -354,9 +382,50 @@ const all = computed(() => {
     sum = Object.values(months.value).reduce((a, b) => a + b.sum, 0);
   return sum.toFixed(2);
 });
+const invests = computed(() => {
+  const arr = [];
+  const sum = shares.value.reduce((a, b) => a + b.rate * 12, 0);
+  for (let i of years.value) {
+    arr.push(sum * i);
+  }
+  return arr;
+});
+const portfolio = computed(() => {
+  let arr = [];
+  for (let year of years.value) {
+    let months = year * 12;
+    let total = 0;
+    for (let s of shares.value) {
+      console.log(s);
+      let sumShare = 0;
+      for (let i = 0; i < months; i++) {
+        sumShare =
+          (sumShare + +s.rate) *
+          (1 + +s.percent / payoutRates.value[s.payoutRate] / 100);
+      }
+      total += sumShare;
+    }
+    arr.push(total);
+  }
+  return arr;
+});
+
+const dividende = computed(() => {
+  const arr = [];
+  for (const index in years.value) {
+    arr.push((+portfolio.value[index] - invests.value[index]).toFixed());
+  }
+  return arr;
+});
 function newShare() {
   if (!share.value) return;
-  shares.value.push({ name: share.value, dividends: [] });
+  shares.value.push({
+    name: share.value,
+    dividends: [],
+    rate: 0,
+    percent: 0,
+    payoutRate: "",
+  });
   share.value = "";
 }
 function newDividend(share: Share) {
