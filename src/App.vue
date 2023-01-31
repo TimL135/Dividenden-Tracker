@@ -397,8 +397,7 @@ const portfolio = computed(() => {
     let total = 0;
     for (let s of shares.value) {
       let sumShare = 0;
-      for (let i = 0; i < months; i++) {
-        sumShare += +s.rate;
+      for (let month = 0; month < months; month++) {
         switch (payoutRates.value[s.payoutRate]) {
           case 12:
             sumShare =
@@ -406,24 +405,26 @@ const portfolio = computed(() => {
               (1 + +s.percent / payoutRates.value[s.payoutRate] / 100);
             break;
           case 4:
-            if (months && months % 3 == 0)
+            if (month && month % 3 == 0)
               sumShare =
                 sumShare *
                 (1 + +s.percent / payoutRates.value[s.payoutRate] / 100);
             break;
           case 2:
-            if (months && months % 6 == 0)
+            if (month && month % 6 == 0)
               sumShare =
                 sumShare *
                 (1 + +s.percent / payoutRates.value[s.payoutRate] / 100);
             break;
           case 1:
-            if (months && months % 12 == 0)
+            if (month && month % 12 == 0)
               sumShare =
                 sumShare *
                 (1 + +s.percent / payoutRates.value[s.payoutRate] / 100);
+
             break;
         }
+        sumShare += +s.rate;
       }
       total += sumShare;
     }
