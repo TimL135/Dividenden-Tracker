@@ -186,7 +186,7 @@
         </div>
       </template>
       <template #differenz
-        >Differenz: {{ (incomes - outcomes).toFixed(2) }}€</template
+        >Differenz: {{ (+incomes - +outcomes).toFixed(2) }}€</template
       >
       <template #erratic><h6>Unregelmäßig</h6></template>
       <template #erraticIncome>
@@ -396,12 +396,34 @@ const portfolio = computed(() => {
     let months = year * 12;
     let total = 0;
     for (let s of shares.value) {
-      console.log(s);
       let sumShare = 0;
       for (let i = 0; i < months; i++) {
-        sumShare =
-          (sumShare + +s.rate) *
-          (1 + +s.percent / payoutRates.value[s.payoutRate] / 100);
+        sumShare += +s.rate;
+        switch (payoutRates.value[s.payoutRate]) {
+          case 12:
+            sumShare =
+              sumShare *
+              (1 + +s.percent / payoutRates.value[s.payoutRate] / 100);
+            break;
+          case 4:
+            if (months && months % 3 == 0)
+              sumShare =
+                sumShare *
+                (1 + +s.percent / payoutRates.value[s.payoutRate] / 100);
+            break;
+          case 2:
+            if (months && months % 6 == 0)
+              sumShare =
+                sumShare *
+                (1 + +s.percent / payoutRates.value[s.payoutRate] / 100);
+            break;
+          case 1:
+            if (months && months % 12 == 0)
+              sumShare =
+                sumShare *
+                (1 + +s.percent / payoutRates.value[s.payoutRate] / 100);
+            break;
+        }
       }
       total += sumShare;
     }
