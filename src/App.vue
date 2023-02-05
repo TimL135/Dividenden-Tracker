@@ -93,15 +93,15 @@
         </div>
         <div class="row">
           <div class="col-3">Jahre</div>
-          <div class="col-3">Investiert</div>
           <div class="col-3">Portfolio</div>
           <div class="col-3">Dividende</div>
+          <div class="col-3">Div. p.a.</div>
         </div>
         <div v-for="(year, index) of years" class="row">
           <div class="col-3">{{ year }}:</div>
-          <div class="col-3">{{ invests[index] }}€</div>
           <div class="col-3">{{ portfolio[index] }}€</div>
           <div class="col-3">{{ dividende[index] }}€</div>
+          <div class="col-3">{{ dividendePerYear[index] }}€</div>
         </div>
       </template>
       <template #Gesamt>Gesamt({{ all }}€)</template>
@@ -312,7 +312,7 @@ const payoutRates = ref<{ [key: string]: number }>({
   halbesJahr: 2,
   jahr: 1,
 });
-const years = ref([1, 2, 3, 5, 10, 15, 20, 25]);
+const years = ref([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30]);
 const items = computed(() => {
   const array: any = [{ title: "", hash: "head", noAccordion: true }];
   shares.value.forEach((e: Share) =>
@@ -393,51 +393,71 @@ const invests = computed(() => {
 const portfolio = computed(() => {
   let arr = [];
   for (let year of years.value) {
-    let months = year * 12;
-    let total = 0;
-    for (let s of shares.value) {
-      let sumShare = 0;
-      for (let month = 0; month < months; month++) {
-        switch (payoutRates.value[s.payoutRate]) {
-          case 12:
-            sumShare =
-              sumShare *
-              (1 + +s.percent / payoutRates.value[s.payoutRate] / 100);
-            break;
-          case 4:
-            if (month && month % 3 == 0)
-              sumShare =
-                sumShare *
-                (1 + +s.percent / payoutRates.value[s.payoutRate] / 100);
-            break;
-          case 2:
-            if (month && month % 6 == 0)
-              sumShare =
-                sumShare *
-                (1 + +s.percent / payoutRates.value[s.payoutRate] / 100);
-            break;
-          case 1:
-            if (month && month % 12 == 0)
-              sumShare =
-                sumShare *
-                (1 + +s.percent / payoutRates.value[s.payoutRate] / 100);
-
-            break;
-        }
-        sumShare += +s.rate;
-      }
-      total += sumShare;
-    }
-    arr.push(total.toFixed(0));
+    arr.push(calcPortfolio(year));
   }
   return arr;
 });
+
+function calcPortfolio(year: number) {
+  let months = year * 12;
+  let total = 0;
+  for (let s of shares.value) {
+    let sumShare = 0;
+    for (let month = 0; month < months; month++) {
+      switch (payoutRates.value[s.payoutRate]) {
+        case 12:
+          sumShare =
+            sumShare * (1 + +s.percent / payoutRates.value[s.payoutRate] / 100);
+          break;
+        case 4:
+          if (month && month % 3 == 0)
+            sumShare =
+              sumShare *
+              (1 + +s.percent / payoutRates.value[s.payoutRate] / 100);
+          break;
+        case 2:
+          if (month && month % 6 == 0)
+            sumShare =
+              sumShare *
+              (1 + +s.percent / payoutRates.value[s.payoutRate] / 100);
+          break;
+        case 1:
+          if (month && month % 12 == 0)
+            sumShare =
+              sumShare *
+              (1 + +s.percent / payoutRates.value[s.payoutRate] / 100);
+
+          break;
+      }
+      sumShare += +s.rate;
+    }
+    total += sumShare;
+  }
+  return total.toFixed(0);
+}
 
 const dividende = computed(() => {
   const arr = [];
   for (const index in years.value) {
     arr.push((+portfolio.value[index] - invests.value[index]).toFixed());
   }
+  return arr;
+});
+const dividendePerYear = computed(() => {
+  const arr = [];
+  for (let year of years.value) {
+    console.log(
+      calcPortfolio(year),
+      calcPortfolio(year - 1),
+      calcPortfolio(year) - calcPortfolio(year - 1)
+    );
+    arr.push(
+      calcPortfolio(year) -
+        calcPortfolio(year - 1) -
+        shares.value.reduce((a, b) => a + +b.rate * 12, 0)
+    );
+  }
+  console.log(arr);
   return arr;
 });
 function newShare() {
