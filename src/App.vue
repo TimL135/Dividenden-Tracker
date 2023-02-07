@@ -82,8 +82,30 @@
         </div>
       </template>
       <template #Monate>
-        <div v-for="month of months">
-          {{ month.month }}: {{ month.sum.toFixed(2) }}€
+        <div class="row">
+          <div class="col-4">Monat</div>
+          <div class="col-4">Dividende</div>
+          <div class="col-4">Wachstum</div>
+        </div>
+        <div v-for="(month, index) of Object.values(months)" class="row">
+          <div class="col-4">
+            {{
+              new Date(
+                +month.month.substring(0, 4),
+                +month.month.substring(4) - 1,
+                1
+              ).toLocaleString("default", { year: "2-digit", month: "short" })
+            }}
+          </div>
+          <div class="col-4">{{ month.sum.toFixed(2) }}€</div>
+          <div class="col-4" v-if="index > 0">
+            {{
+              (
+                (month.sum / Object.values(months)[+index - 1]?.sum) * 100 -
+                100
+              ).toFixed(0) || ""
+            }}%
+          </div>
         </div>
       </template>
       <template #Info>
@@ -446,18 +468,12 @@ const dividende = computed(() => {
 const dividendePerYear = computed(() => {
   const arr = [];
   for (let year of years.value) {
-    console.log(
-      calcPortfolio(year),
-      calcPortfolio(year - 1),
-      calcPortfolio(year) - calcPortfolio(year - 1)
-    );
     arr.push(
       calcPortfolio(year) -
         calcPortfolio(year - 1) -
         shares.value.reduce((a, b) => a + +b.rate * 12, 0)
     );
   }
-  console.log(arr);
   return arr;
 });
 function newShare() {
