@@ -555,7 +555,7 @@ const outcomes = computed(() =>
 function newIncome() {
   if (!income.value || !source.value) return;
   finances.value.income.push({
-    amount: parseInt(income.value),
+    amount: parseFloat(income.value),
     reason: source.value,
   });
   income.value = "";
@@ -566,7 +566,7 @@ const reason = ref("");
 function newOutcome() {
   if (!outcome.value || !reason.value) return;
   finances.value.outcome.push({
-    amount: parseInt(outcome.value),
+    amount: parseFloat(outcome.value),
     reason: reason.value,
   });
   outcome.value = "";
@@ -579,7 +579,7 @@ function newErraticIncome() {
   if (!erraticIncome.value || !erraticSource.value || !erraticDate.value)
     return;
   finances.value.erraticIncome.push({
-    amount: parseInt(erraticIncome.value),
+    amount: parseFloat(erraticIncome.value),
     reason: erraticSource.value,
     date: erraticDate.value,
   });
@@ -594,7 +594,7 @@ function newErraticOutcome() {
   if (!erraticOutcome.value || !erraticReason.value || !erraticOutDate.value)
     return;
   finances.value.erraticOutcome.push({
-    amount: parseInt(erraticOutcome.value),
+    amount: parseFloat(erraticOutcome.value),
     reason: erraticReason.value,
     date: erraticOutDate.value,
   });
