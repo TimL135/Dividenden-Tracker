@@ -92,7 +92,7 @@
             {{
               new Date(
                 +month.month.substring(0, 4),
-                +month.month.substring(4) - 1,
+                +month.month.substring(5) - 1,
                 1
               ).toLocaleString("default", { year: "2-digit", month: "short" })
             }}
@@ -300,7 +300,11 @@
       ></template>
       <template #erraticMonate>
         <div v-for="month of erraticMonths">
-          {{ month.month }}: {{ month.sum.toFixed(2) }}€
+          {{   new Date(
+                +month.month.substring(0, 4),
+                +month.month.substring(5) - 1,
+                1
+              ).toLocaleString("default", { year: "2-digit", month: "short" }) }}: {{ month.sum.toFixed(2) }}€
         </div>
       </template>
     </Accordion>
