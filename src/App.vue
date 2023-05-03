@@ -5,61 +5,35 @@
         <h5>Aktien</h5>
         <div>
           <TextInput placeholder="Aktie" v-model="share">
-            <template #button
-              ><Button sideButton @click="newShare">anlegen</Button></template
-            >
+            <template #button><Button sideButton @click="newShare">anlegen</Button></template>
           </TextInput>
         </div>
       </template>
-      <template
-        v-for="share of shares"
-        #[stringWithoutSpecialCharacters(share.name)]
-      >
+      <template v-for="share of shares" #[stringWithoutSpecialCharacters(share.name)]>
         <Modal title="Einstellungen">
-          <Button
-            class="btn btn-danger"
-            @click="
-              shares = shares.filter(
-                (e) => JSON.stringify(e) != JSON.stringify(share)
-              )
-            "
-            >Aktie Löschen</Button
-          >
+          <Button class="btn btn-danger" @click="shares = shares.filter(
+              (e) => JSON.stringify(e) != JSON.stringify(share)
+            )
+            ">Aktie Löschen</Button>
           <div>
-            <NumberInput
-              placeholder="Dividende in %"
-              v-model="share.percent"
-              step="0.01"
-            ></NumberInput>
+            <NumberInput placeholder="Dividende in %" v-model="share.percent" step="0.01"></NumberInput>
           </div>
           <div>
-            <NumberInput
-              placeholder="Sparrate pro Monat"
-              v-model="share.rate"
-              step="0.01"
-            >
+            <NumberInput placeholder="Sparrate pro Monat" v-model="share.rate" step="0.01">
             </NumberInput>
-            <SelectInput
-              placeholder="ausschüttung"
-              v-model="share.payoutRate"
-              :options="['monat', 'quartal', 'halbesJahr', 'jahr']"
-              showAll
-            >
+            <SelectInput placeholder="ausschüttung" v-model="share.payoutRate"
+              :options="['monat', 'quartal', 'halbesJahr', 'jahr']" showAll>
             </SelectInput>
           </div>
           <template #button>
             <div class="w-100 px-2">
               <Button class="btn btn-primary w-100">Einstellungen</Button>
-            </div></template
-          >
+            </div>
+          </template>
         </Modal>
         <div class="d-flex px-2">
           <div class="col-4 col-sm-5 me-2">
-            <NumberInput
-              placeholder="dividende"
-              v-model="dividend"
-              step="0.01"
-            ></NumberInput>
+            <NumberInput placeholder="dividende" v-model="dividend" step="0.01"></NumberInput>
           </div>
           <div class="col-4 col-sm-5 me-2">
             <DateInput placeholder="Datum" v-model="date"></DateInput>
@@ -70,11 +44,7 @@
         </div>
         <div v-for="dividend of share.dividends" class="d-flex">
           <div class="col-4 col-sm-5 me-2">
-            <NumberInput
-              placeholder="dividende"
-              v-model="dividend.dividend"
-              step="0.01"
-            ></NumberInput>
+            <NumberInput placeholder="dividende" v-model="dividend.dividend" step="0.01"></NumberInput>
           </div>
           <div class="col-4 col-sm-5">
             <DateInput placeholder="Datum" v-model="dividend.date"></DateInput>
@@ -127,16 +97,16 @@
         </div>
       </template>
       <template #Gesamt>Gesamt({{ all }}€)</template>
-      <template #finances><h5>Finanzen</h5></template>
-      <template #regular><h6>Monatlich</h6></template>
+      <template #finances>
+        <h5>Finanzen</h5>
+      </template>
+      <template #regular>
+        <h6>Monatlich</h6>
+      </template>
       <template #income>
         <div class="d-flex">
           <div class="col-4 col-sm-5 me-2">
-            <NumberInput
-              placeholder="Einahme"
-              v-model="income"
-              step="0.01"
-            ></NumberInput>
+            <NumberInput placeholder="Einahme" v-model="income" step="0.01"></NumberInput>
           </div>
           <div class="col-4 col-sm-5 me-2">
             <TextInput placeholder="Quelle" v-model="source"></TextInput>
@@ -145,37 +115,24 @@
         </div>
         <div v-for="(income, index) of finances.income" class="d-flex">
           <div class="col-4 col-sm-5 me-2">
-            <NumberInput
-              placeholder="Einahme"
-              v-model="income.amount"
-              step="0.01"
-            ></NumberInput>
+            <NumberInput placeholder="Einahme" v-model="income.amount" step="0.01"></NumberInput>
           </div>
           <div class="col-4 col-sm-5 me-2">
             <TextInput placeholder="Quelle" v-model="income.reason"></TextInput>
           </div>
           <div class="mt-3">
-            <Button
-              class="btn btn-danger"
-              @click="
-                () =>
-                  (finances.income = finances.income.filter(
-                    (e, i) => i != index
-                  ))
-              "
-              >löschen</Button
-            >
+            <Button class="btn btn-danger" @click="() =>
+              (finances.income = finances.income.filter(
+                (e, i) => i != index
+              ))
+              ">löschen</Button>
           </div>
         </div>
       </template>
       <template #outcome>
         <div class="d-flex">
           <div class="col-4 col-sm-5 me-2">
-            <NumberInput
-              placeholder="Ausgabe"
-              v-model="outcome"
-              step="0.01"
-            ></NumberInput>
+            <NumberInput placeholder="Ausgabe" v-model="outcome" step="0.01"></NumberInput>
           </div>
           <div class="col-4 col-sm-5 me-2">
             <TextInput placeholder="Grund" v-model="reason"></TextInput>
@@ -184,41 +141,28 @@
         </div>
         <div v-for="(outcome, index) of finances.outcome" class="d-flex">
           <div class="col-4 col-sm-5 me-2">
-            <NumberInput
-              placeholder="Ausgabe"
-              v-model="outcome.amount"
-              step="0.01"
-            ></NumberInput>
+            <NumberInput placeholder="Ausgabe" v-model="outcome.amount" step="0.01"></NumberInput>
           </div>
           <div class="col-4 col-sm-5 me-2">
             <TextInput placeholder="Grund" v-model="outcome.reason"></TextInput>
           </div>
           <div class="mt-3">
-            <Button
-              class="btn btn-danger"
-              @click="
-                () =>
-                  (finances.outcome = finances.outcome.filter(
-                    (e, i) => i != index
-                  ))
-              "
-              >löschen</Button
-            >
+            <Button class="btn btn-danger" @click="() =>
+              (finances.outcome = finances.outcome.filter(
+                (e, i) => i != index
+              ))
+              ">löschen</Button>
           </div>
         </div>
       </template>
-      <template #differenz
-        >Differenz: {{ (+incomes - +outcomes).toFixed(2) }}€</template
-      >
-      <template #erratic><h6>Unregelmäßig</h6></template>
+      <template #differenz>Differenz: {{ (+incomes - +outcomes).toFixed(2) }}€</template>
+      <template #erratic>
+        <h6>Unregelmäßig</h6>
+      </template>
       <template #erraticIncome>
         <div class="row">
           <div class="col-6">
-            <NumberInput
-              placeholder="Einahme"
-              v-model="erraticIncome"
-              step="0.01"
-            ></NumberInput>
+            <NumberInput placeholder="Einahme" v-model="erraticIncome" step="0.01"></NumberInput>
           </div>
           <div class="col-6">
             <TextInput placeholder="Quelle" v-model="erraticSource"></TextInput>
@@ -230,39 +174,22 @@
             <Button @click="newErraticIncome">erstellen</Button>
           </div>
         </div>
-        <div
-          v-for="(erraticIncome, index) of finances.erraticIncome"
-          class="row g-1"
-        >
+        <div v-for="(erraticIncome, index) of finances.erraticIncome" class="row g-1">
           <div class="col-3">
-            <NumberInput
-              placeholder="Einahme"
-              v-model="erraticIncome.amount"
-              step="0.01"
-            ></NumberInput>
+            <NumberInput placeholder="Einahme" v-model="erraticIncome.amount" step="0.01"></NumberInput>
           </div>
           <div class="col-4">
-            <TextInput
-              placeholder="Quelle"
-              v-model="erraticIncome.reason"
-            ></TextInput>
+            <TextInput placeholder="Quelle" v-model="erraticIncome.reason"></TextInput>
           </div>
           <div class="col-5">
-            <DateInput
-              placeholder="Tag"
-              v-model="erraticIncome.date"
-            ></DateInput>
+            <DateInput placeholder="Tag" v-model="erraticIncome.date"></DateInput>
           </div>
         </div>
       </template>
       <template #erraticOutcome>
         <div class="row">
           <div class="col-6">
-            <NumberInput
-              placeholder="Ausgabe"
-              v-model="erraticOutcome"
-              step="0.01"
-            ></NumberInput>
+            <NumberInput placeholder="Ausgabe" v-model="erraticOutcome" step="0.01"></NumberInput>
           </div>
           <div class="col-6">
             <TextInput placeholder="Grund" v-model="erraticReason"></TextInput>
@@ -274,37 +201,25 @@
             <Button @click="newErraticOutcome">erstellen</Button>
           </div>
         </div>
-        <div
-          v-for="(erraticOutcome, index) of finances.erraticOutcome"
-          class="row g-1"
-        >
+        <div v-for="(erraticOutcome, index) of finances.erraticOutcome" class="row g-1">
           <div class="col-3">
-            <NumberInput
-              placeholder="Ausgabe"
-              v-model="erraticOutcome.amount"
-              step="0.01"
-            ></NumberInput>
+            <NumberInput placeholder="Ausgabe" v-model="erraticOutcome.amount" step="0.01"></NumberInput>
           </div>
           <div class="col-4">
-            <TextInput
-              placeholder="Grund"
-              v-model="erraticOutcome.reason"
-            ></TextInput>
+            <TextInput placeholder="Grund" v-model="erraticOutcome.reason"></TextInput>
           </div>
           <div class="col-5">
-            <DateInput
-              placeholder="Tag"
-              v-model="erraticOutcome.date"
-            ></DateInput>
-          </div></div
-      ></template>
+            <DateInput placeholder="Tag" v-model="erraticOutcome.date"></DateInput>
+          </div>
+        </div>
+      </template>
       <template #erraticMonate>
         <div v-for="month of erraticMonths">
-          {{   new Date(
-                +month.month.substring(0, 4),
-                +month.month.substring(5) - 1,
-                1
-              ).toLocaleString("default", { year: "2-digit", month: "short" }) }}: {{ month.sum.toFixed(2) }}€
+          {{ new Date(
+            +month.month.substring(0, 4),
+            +month.month.substring(5) - 1,
+            1
+          ).toLocaleString("default", { year: "2-digit", month: "short" }) }}: {{ month.sum.toFixed(2) }}€
         </div>
       </template>
     </Accordion>
@@ -384,12 +299,12 @@ const months = computed(() => {
       object[dividend.date.slice(0, -3)]
         ? (object[dividend.date.slice(0, -3)].sum += +dividend.dividend)
         : (object[dividend.date.slice(0, -3)] = {
-            month: dividend.date.slice(0, -3),
-            sum: +dividend.dividend,
-          })
+          month: dividend.date.slice(0, -3),
+          sum: +dividend.dividend,
+        })
     )
   );
-  return object;
+  return Object.assign({}, Object.values(object).sort((a, b) => a.month > b.month ? 1 : -1));
 });
 const increase = computed(() => {
   let eur = 0;
@@ -474,8 +389,8 @@ const dividendePerYear = computed(() => {
   for (let year of years.value) {
     arr.push(
       calcPortfolio(year) -
-        calcPortfolio(year - 1) -
-        shares.value.reduce((a, b) => a + +b.rate * 12, 0)
+      calcPortfolio(year - 1) -
+      shares.value.reduce((a, b) => a + +b.rate * 12, 0)
     );
   }
   return arr;
@@ -612,17 +527,17 @@ const erraticMonths = computed(() => {
     object[income.date.slice(0, -3)]
       ? (object[income.date.slice(0, -3)].sum += income.amount)
       : (object[income.date.slice(0, -3)] = {
-          month: income.date.slice(0, -3),
-          sum: income.amount,
-        })
+        month: income.date.slice(0, -3),
+        sum: income.amount,
+      })
   );
   finances.value.erraticOutcome.forEach((outcome: erraticIoCome) =>
     object[outcome.date.slice(0, -3)]
       ? (object[outcome.date.slice(0, -3)].sum -= outcome.amount)
       : (object[outcome.date.slice(0, -3)] = {
-          month: outcome.date.slice(0, -3),
-          sum: -outcome.amount,
-        })
+        month: outcome.date.slice(0, -3),
+        sum: -outcome.amount,
+      })
   );
   return object;
 });
